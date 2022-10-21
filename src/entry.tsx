@@ -12,3 +12,7 @@ const _habitat = habitat(Container);
 const rendering = () => _habitat.render({
   selector: '[data-widget-host="bc-op-widget"]'
 });
+
+window.renderWidget = rendering;
+
+rendering();
