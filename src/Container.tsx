@@ -1,4 +1,6 @@
 import { h, FunctionalComponent } from "preact";
+import { useState } from "react";
+import { WidgetContext } from "./Context";
 
 interface IProps {
   env?: string;
@@ -13,8 +15,11 @@ const WidgetContainer: FunctionalComponent<IProps> = ({
   text = 'Protects from Loss/Damage/Theft & More!',
   activeColor
 }) => {
+  const [isLoading, setIsLoading] = useState(false);
   return (
-    <div></div>
+    <WidgetContext.Provider value={{}}>
+
+    </WidgetContext.Provider>
   );
 };
 
