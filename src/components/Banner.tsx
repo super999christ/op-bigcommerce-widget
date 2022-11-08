@@ -1,3 +1,6 @@
+/**
+ * External Dependencies
+ */
 import { h, FunctionalComponent } from "preact";
 import { memo } from "preact/compat";
 import styled from "styled-components";
@@ -116,6 +119,9 @@ interface IProps {
   onClose: (close: boolean) => void;
 }
 
+/**
+ * OrderProtection `about` popup component
+ */
 const OPBanner: FunctionalComponent<IProps> = ({ onClose }) => {
   return (
     <BannerWrapper>

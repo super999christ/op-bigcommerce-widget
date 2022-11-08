@@ -1,8 +1,17 @@
+/**
+ * External Dependencies
+ */
 import { h, FunctionalComponent } from "preact";
-import { memo } from 'preact/compat';
 import styled from 'styled-components';
+
+/**
+ * Internal Dependencies
+ */
 import { useWidgetContext } from '../Context';
 
+/**
+ * Define styled components
+ */
 const ToggleIconSize = 15;
 const PaddingSize = 2;
 
@@ -75,6 +84,9 @@ interface IProps {
   onChange?: (checked: boolean) => void;
 }
 
+/**
+ * OrderProtection Enable/Disable toggle button component
+ */
 const OPToggle: FunctionalComponent<IProps> = ({
   activeColor = "#222",
   checked = false,
@@ -90,4 +102,4 @@ const OPToggle: FunctionalComponent<IProps> = ({
   )
 };
 
-export default memo(OPToggle);
+export default OPToggle;
