@@ -130,6 +130,7 @@ export const getOPProductFromCart = (cart: ICartResponse): ILineItem => {
   const opProduct = cart.lineItems?.digitalItems.find(
     (item) => item.name === ORDER_PROTECTION_PRODUCT
   );
+  window.opProduct = opProduct;
   return opProduct;
 };
 

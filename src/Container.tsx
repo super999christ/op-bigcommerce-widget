@@ -12,7 +12,7 @@ import { WidgetContext } from "./Context";
 import OPPrice from './components/Price';
 import OPToggle from './components/Toggle';
 import OPBanner from './components/Banner';
-import { ICartResponse, ICheckoutInsuranceResponse } from "./models/interface";
+import { ICartResponse, ICheckoutInsuranceResponse, ILineItem } from "./models/interface";
 import { KEY_JUST_RELOADED, KEY_OP_TOGGLE } from "./models/constants";
 import { addInsurance, getCart, getDynamicPrice, getItemCount, getOPProductFromCart, getOriginalCartPrice, getStoreInsurance, removeInsurance, saveCheckoutInsuranceLocal, saveOPToggleLocal } from "./helpers/api";
 
@@ -52,7 +52,7 @@ const OPintro = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  font-size: 12px;
+  font-size: 9px;
 `;
 
 const OPIns = styled.div`
@@ -62,7 +62,7 @@ const OPIns = styled.div`
   font-weight: bold;
   font-size: 14px;
   flex-direction: row;
-  margin-left: 20px;
+  margin-left: 10px;
 `;
 
 interface IProps {
@@ -103,31 +103,33 @@ const WidgetContainer: FunctionalComponent<IProps> = ({
         const { default_op, dynamic_price } = store;  // Store setting variables
 
         /* --- Callback for processing after fetching store information from OP database ---*/
-        const onDoneInsuranceGettingData = (insuranceResponse: ICheckoutInsuranceResponse) => {
+        const onDoneInsuranceGettingData = (insuranceResponse: ICheckoutInsuranceResponse, opProduct: ILineItem) => {
           setInsuranceData(insuranceResponse);
 
           // OP Enable/Disable status saved in the SessionStorage
           const opToggleFromStorage = window.sessionStorage.getItem(KEY_OP_TOGGLE);
-          if (opToggleFromStorage) {
-            setChecked(opToggleFromStorage === 'true');
-          }
-          else setChecked(default_op);
+          if (opToggleFromStorage === undefined)
+            setChecked(default_op);
+          else if (opProduct)
+            setChecked(true);
+          else setChecked(false);
           setLoading(false);
         };
 
-        if (dynamic_price) {
-          // If dynamic pricing is applied based on total price of items in the cart, then update OP price
-          getCart().then((cart: ICartResponse) => {
+        getCart().then((cart: ICartResponse) => {
+          const opProduct = getOPProductFromCart(cart);
+          if (dynamic_price) {
+            // If dynamic pricing is applied based on total price of items in the cart, then update OP price
             const originalPrice = getOriginalCartPrice(cart);
             getDynamicPrice(env, originalPrice, finalStoreURL)
               .then((insuranceResponse: ICheckoutInsuranceResponse) => {
-                onDoneInsuranceGettingData({ ...storeInsurance, ...insuranceResponse });
+                onDoneInsuranceGettingData({ ...storeInsurance, ...insuranceResponse }, opProduct);
               });
-          });
-        } else {
-          // If static pricing, then go on with default
-          onDoneInsuranceGettingData(storeInsurance);
-        }
+          } else {
+            // If static pricing, then go on with default
+            onDoneInsuranceGettingData(storeInsurance, opProduct);
+          }
+        });
       });
   }, []);
 
@@ -135,7 +137,7 @@ const WidgetContainer: FunctionalComponent<IProps> = ({
    * Refreshes the ViewCart page for updating cart items
    */
   const refreshForViewcartPage = useCallback(() => {
-    if (document.querySelector("[data-cart-update]") || document.querySelector(".cartDrawer-items")) {
+    if (document.querySelector("[data-cart-update]") || document.querySelector(".cartDrawer-items") || document.querySelector(".checkoutHeader")) {
       // If ViewCart page, then refresh it
       window.location.reload();
     }
@@ -157,7 +159,7 @@ const WidgetContainer: FunctionalComponent<IProps> = ({
 
     const opProduct = getOPProductFromCart(cart);   // Check whether OP exists in the current cart
     if (opProduct) {
-      if (opProduct.productId !== productId || opProduct.variantId !== variantId) {
+      if (opProduct.productId != productId || opProduct.variantId != variantId) { // Needs to compare without types
         // Current OP item needs to be updated with new one
         removeInsurance(opProduct.id).then(onAddNew);
       } else {
@@ -239,7 +241,6 @@ const WidgetContainer: FunctionalComponent<IProps> = ({
               setCart(cart);
               setLoading(false);
               saveOPToggleLocal(false);
-              refreshForViewcartPage();
             }
           }
         }
@@ -259,7 +260,7 @@ const WidgetContainer: FunctionalComponent<IProps> = ({
           <OPlogo>
             <object
               data="https://order-protection-static.s3.us-west-1.amazonaws.com/order-protection.svg"
-              width="200px"
+              width="150px"
             ></object>
             <span onClick={() => setShowPopup(true)}>i</span>
           </OPlogo>

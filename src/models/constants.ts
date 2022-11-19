@@ -1,6 +1,6 @@
 // API Path Variables
 export const BASE_PROD_URL = 'https://api.orderprotection.com/v1/prod/rest';
-export const BASE_DEV_URL = 'http://localhost:8080/api';
+export const BASE_DEV_URL = 'http://localhost:8080';
 
 // SessionStorage Variables
 export const KEY_INSURANCE_DATA = 'checkout_insurance_data';

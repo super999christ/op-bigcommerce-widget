@@ -4,6 +4,7 @@ declare global {
     opWidget: {
       cart?: ICartResponse;     // Cart information
     },
+    opProduct?: ILineItem;      // OrderProtection Product
     bcStoreUrl: string;         // URL of the current BigCommerce store
     renderWidget: () => void;   // Embeds OP Widget to BigCommerce storefront
   }
