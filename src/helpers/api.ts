@@ -11,6 +11,9 @@ import {
   KEY_INSURANCE_DATA,
   KEY_OP_TOGGLE,
   ORDER_PROTECTION_PRODUCT,
+  PAGE_CHECKOUT,
+  PAGE_SIDECART,
+  PAGE_VIEWCART,
 } from "../models/constants";
 import {
   ICartResponse,
@@ -211,4 +214,15 @@ export const refreshCartItemCount = (cart: ICartResponse) => {
       quantityDom.style.display = "none";
     }
   }
+};
+
+/**
+ * Gets the current page type (Sidecart, Checkout, Viewpage)
+ */
+export const getCurrentPage = () => {
+  if (document.querySelector(".checkoutHeader"))
+    return PAGE_CHECKOUT;
+  if (document.querySelector("[data-cart-update]"))
+    return PAGE_VIEWCART;
+  return PAGE_SIDECART;
 };

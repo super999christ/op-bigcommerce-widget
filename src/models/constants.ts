@@ -10,6 +10,11 @@ export const KEY_JUST_RELOADED = 'just_reloaded';
 // OrderProtection variables
 export const ORDER_PROTECTION_PRODUCT = "Order Protection";
 
+// Store Page Variables
+export const PAGE_SIDECART = 0;
+export const PAGE_CHECKOUT = 1;
+export const PAGE_VIEWCART = 2;
+
 /**
  * Gets the base URL of API according to environment
  * @param env prod | dev

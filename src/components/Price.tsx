@@ -13,9 +13,11 @@ import { useWidgetContext } from "../Context";
  * OrderProtection price label component
  */
 const OPPrice: FunctionalComponent = () => {
-  const { insuranceData } = useWidgetContext();
+  const { insuranceData, isLoading } = useWidgetContext();
   return (
-    <div>${Number((insuranceData?.variantPrice / 100).toFixed(2)) || "0.00"}</div>
+    <div style={isLoading && {visibility: 'hidden'}}>
+      ${Number((insuranceData?.variantPrice / 100).toFixed(2)) || "0.00"}
+    </div>
   )
 };
 

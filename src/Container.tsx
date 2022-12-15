@@ -13,8 +13,9 @@ import OPPrice from './components/Price';
 import OPToggle from './components/Toggle';
 import OPBanner from './components/Banner';
 import { ICartResponse, ICheckoutInsuranceResponse, ILineItem } from "./models/interface";
-import { KEY_JUST_RELOADED, KEY_OP_TOGGLE } from "./models/constants";
-import { addInsurance, getCart, getDynamicPrice, getItemCount, getOPProductFromCart, getOriginalCartPrice, getStoreInsurance, removeInsurance, saveCheckoutInsuranceLocal, saveOPToggleLocal } from "./helpers/api";
+import { KEY_OP_TOGGLE, PAGE_CHECKOUT, PAGE_SIDECART } from "./models/constants";
+import { addInsurance, getCart, getCurrentPage, getDynamicPrice, getItemCount, getOPProductFromCart, getOriginalCartPrice, getStoreInsurance, removeInsurance, saveCheckoutInsuranceLocal, saveOPToggleLocal } from "./helpers/api";
+import LoadingBar from "./components/LoadingBar";
 
 /**
  * Define styled components
@@ -48,19 +49,23 @@ const OPlogo = styled.div`
   }
 `;
 
-const OPintro = styled.div`
+interface IPageProps {
+  page?: number;
+};
+
+const OPintro = styled.div<IPageProps>`
   display: flex;
   flex-direction: row;
   align-items: center;
-  font-size: 9px;
+  font-size: ${props => props.page === PAGE_CHECKOUT ? '14px' : '11px'};
 `;
 
-const OPIns = styled.div`
+const OPIns = styled.div<IPageProps>`
   display: flex;
   justify-content: center;
   align-items: center;
   font-weight: bold;
-  font-size: 14px;
+  font-size: ${props => props.page === PAGE_CHECKOUT ? '18px' : '14px'};
   flex-direction: row;
   margin-left: 10px;
 `;
@@ -82,7 +87,7 @@ const WidgetContainer: FunctionalComponent<IProps> = ({
   activeColor
 }) => {
   // State variables
-  const [isLoading, setLoading] = useState(false);          // Loading status of widget
+  const [isLoading, setLoading] = useState(true);          // Loading status of widget
   const [isChecked, setChecked] = useState(false);          // Check status of OPToggle button
   const [showPopup, setShowPopup] = useState(false);        // Visibility of OP Popup
   const [cart, setCart] = useState<ICartResponse>(null);    // Cart information from storefront
@@ -91,6 +96,8 @@ const WidgetContainer: FunctionalComponent<IProps> = ({
   // Global Storefront URL
   const finalStoreURL = storeURL || window.location.origin;
   window.bcStoreUrl = finalStoreURL;
+
+  const currentPage = getCurrentPage();
 
   /**
    * Initialize cart according to the storefront information( :default_op & dynamic_pricing)
@@ -248,6 +255,11 @@ const WidgetContainer: FunctionalComponent<IProps> = ({
     }
   }, [isChecked]);
 
+  const onOPToggle = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, value: boolean) => {
+    setChecked(value);
+    event.stopPropagation();
+  };
+
   return (
     <WidgetContext.Provider value={{ isLoading, insuranceData }}>
       <link rel="preconnect" href="https://fonts.gstatic.com" />
@@ -260,20 +272,21 @@ const WidgetContainer: FunctionalComponent<IProps> = ({
           <OPlogo>
             <object
               data="https://order-protection-static.s3.us-west-1.amazonaws.com/order-protection.svg"
-              width="150px"
+              width={`${currentPage === PAGE_CHECKOUT ? 250 : 180}px`}
             ></object>
             <span onClick={() => setShowPopup(true)}>i</span>
           </OPlogo>
-          <OPintro>
+          <OPintro page={currentPage}>
             <span>{text}</span>
           </OPintro>
         </div>
-        <OPIns>
+        <OPIns page={currentPage}>
+          {isLoading && <LoadingBar />}
           <OPPrice />
           <OPToggle
             activeColor={activeColor}
             checked={isChecked}
-            onChange={(value) => setChecked(value)}
+            onChange={onOPToggle}
           />
         </OPIns>
       </SideCard>

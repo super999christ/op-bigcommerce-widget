@@ -81,7 +81,7 @@ const CheckBoxWrapper = styled.div<ICheckboxWrapperProps>`
 interface IProps {
   activeColor?: string;
   checked?: boolean;
-  onChange?: (checked: boolean) => void;
+  onChange?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, checked: boolean) => void;
 }
 
 /**
@@ -95,7 +95,7 @@ const OPToggle: FunctionalComponent<IProps> = ({
   const { isLoading } = useWidgetContext();
 
   return (
-    <CheckBoxWrapper onClick={() => isLoading ? {} : onChange(!checked)} disabled={isLoading}>
+    <CheckBoxWrapper onClick={(event) => isLoading ? {} : onChange(event, !checked)} disabled={isLoading} style={isLoading && {visibility: 'hidden'}}>
       <CheckBox type="checkbox" activeColor={activeColor} checked={checked} />
       <CheckBoxLabel htmlFor="checkbox" />
     </CheckBoxWrapper>
